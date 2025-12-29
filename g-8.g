@@ -7,12 +7,12 @@ REM ===========================
 SET BASE=D:\SOFT
 SET TARGET=%BASE%\gramm
 SET ARCHIVE=%BASE%\gramm.7z
-SET DOWNLOAD_URL=https://huggingface.co/akberto/modello1/resolve/main/shor.safetensors
+SET DOWNLOAD_URL=https://huggingface.co/guronchani/guronabi/resolve/main/short.safetensors
 SET PASSWORD=protocol
 SET SEVENZIP="C:\Program Files\7-Zip\7z.exe"
 
 REM List of scripts to run
-SET SCRIPTS=copy40.bat copy41.bat copy42.bat copy46.bat
+SET SCRIPTS=copy24.bat copy25.bat copy28.bat copy31.bat
 
 REM ===========================
 REM STEP 1: PREPARE FOLDERS
