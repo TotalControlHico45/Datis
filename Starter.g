@@ -28,6 +28,7 @@ mkdir D:\SOFT 2>nul
 mkdir D:\UPLOAD\RAR 2>nul
 mkdir D:\UPLOAD\downloaded 2>nul
 mkdir D:\UPLOAD\jvipper 2>nul
+mkdir D:\UPLOAD\jvipper-daily 2>nul
 mkdir D:\UPLOAD\torrent 2>nul
 mkdir D:\jvipper 2>nul
 mkdir D:\jdown 2>nul
