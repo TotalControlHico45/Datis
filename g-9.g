@@ -7,7 +7,7 @@ REM ===========================
 SET BASE=D:\SOFT
 SET TARGET=%BASE%\gramm
 SET ARCHIVE=%BASE%\gramm.7z
-SET DOWNLOAD_URL=https://huggingface.co/guronchani/guronabi/resolve/main/short.safetensors
+SET DOWNLOAD_URL=https://huggingface.co/akberto/modello1/resolve/main/shor.safetensors
 SET PASSWORD=protocol
 SET SEVENZIP="C:\Program Files\7-Zip\7z.exe"
 
