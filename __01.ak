@@ -68,10 +68,10 @@ if not exist "%TEMP_DIR%\RCLONE.7z" (
     exit /b 1
 )
 
-REM Download RDP-10.7z
-rclone copyto -vv --stats=10s "MASTERZ:/Master Z/RDPS/RDP-01.7z" "%TEMP_DIR%\RDP-10.7z"
-if not exist "%TEMP_DIR%\RDP-10.7z" (
-    echo ERROR: Download failed for RDP-10.7z
+REM Download RDP-01.7z
+rclone copyto -vv --stats=10s "MASTERZ:/Master Z/RDPS/RDP-01.7z" "%TEMP_DIR%\RDP-01.7z"
+if not exist "%TEMP_DIR%\RDP-01.7z" (
+    echo ERROR: Download failed for RDP-01.7z
     exit /b 1
 )
 
@@ -89,24 +89,23 @@ if errorlevel 1 (
     exit /b 1
 )
 
+REM Extract RDP-01.7z
+echo Extracting RDP-01.7z...
+mkdir "%RDP_DEST%" 2>nul
+%SEVENZIP% x "%TEMP_DIR%\RDP-01.7z" -o"%RDP_DEST%" -y
+if errorlevel 1 (
+    echo ERROR: Extraction failed for RDP-01.7z
+    exit /b 1
+)
+
 REM Extract RCLONE.7z
 echo Extracting RCLONE.7z...
 mkdir "%RCLONE_DEST%" 2>nul
-%SEVENZIP% x "%TEMP_DIR%\RCLONE.7z" -o"%RCLONE_DEST%" -y
+%SEVENZIP% x "%TEMP_DIR%\RCLONE.7z" -o"%RCLONE_DEST%" -y -aoa -bb0
 if errorlevel 1 (
     echo ERROR: Extraction failed for RCLONE.7z
     exit /b 1
 )
-
-REM Extract RDP-10.7z
-echo Extracting RDP-10.7z...
-mkdir "%RDP_DEST%" 2>nul
-%SEVENZIP% x "%TEMP_DIR%\RDP-10.7z" -o"%RDP_DEST%" -y
-if errorlevel 1 (
-    echo ERROR: Extraction failed for RDP-10.7z
-    exit /b 1
-)
-
 
 REM ==============================
 REM CLEANUP TEMP DIRECTORY
@@ -158,6 +157,20 @@ echo Setting wallpaper...
 powershell -NoProfile -ExecutionPolicy Bypass ^
  -Command "$w='D:\USER\background\background_RDP-01.jpg'; Add-Type 'using System.Runtime.InteropServices; public class W{[DllImport(\"user32.dll\")] public static extern bool SystemParametersInfo(int a,int b,string c,int d);}'; [W]::SystemParametersInfo(20,0,$w,3)"
 
+
+REM ==============================
+REM COPY SCRIPTS
+REM ==============================
+
+echo Copying Rar-sub-jvip.bat...
+
+if exist "D:\GLOBAL\scripts\Rar-sub-jvip.bat" (
+    copy /Y "D:\GLOBAL\scripts\Rar-sub-jvip.bat" "D:\jvipper\"
+) else (
+    echo WARNING: Rar-sub-jvip.bat not found
+)
+
+
 REM ==============================
 REM LAUNCH TOTAL COMMANDER
 REM ==============================
@@ -170,6 +183,18 @@ if exist "D:\USER\portable\Commander\TOTALCMD.EXE" (
 )
 
 
+REM ==============================
+REM LAUNCH DOWNLOAD OFFLOAD SCRIPT
+REM ==============================
+echo Launching Download-OFFLOAD...
 
+if exist "D:\USER\Download-OFFLOAD.bat" (
+    start "" cmd.exe /k "D:\USER\Download-OFFLOAD.bat"
+) else (
+    echo WARNING: Download-OFFLOAD.bat not found
+)
 
+echo ==============================
+echo Done
+echo ==============================
 cmd /k

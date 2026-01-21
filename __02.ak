@@ -4,18 +4,33 @@ setlocal
 REM ==============================
 REM CONFIGURATION
 REM ==============================
-set DOWNLOAD_DEST=C:\runi\soft-RDP-02.7z
-set EXTRACT_DEST=D:\SOFT
-set EXTRACT_PASSWORD=protocol
-
-set TC_INI_SRC=D:\SOFT\configs\WINCMD.INI
-set TC_INI_DST=C:\Users\RDP\AppData\Roaming\GHISLER\WINCMD.INI
-
 set SEVENZIP="C:\Program Files\7-Zip\7z.exe"
 
-echo Creating directory structure...
+REM Archive Paths (on Dropbox)
+set GLOBAL_ARCHIVE="MASTERZ:/Master Z/RDPS/GLOBAL.7z"
+set RCLONE_ARCHIVE="MASTERZ:/Master Z/RDPS/RCLONE.7z"
+set RDP_ARCHIVE="MASTERZ:/Master Z/RDPS/RDP-02.7z"
 
-mkdir D:\SOFT 2>nul
+REM Temporary download directory
+set TEMP_DIR=C:\akbarui\temp
+
+REM Extraction Destinations (Changed to unique folders)
+set GLOBAL_DEST=D:/GLOBAL
+set RCLONE_DEST=D:/USER
+set RDP_DEST=D:/USER
+
+set TC_INI_SRC=D:\GLOBAL\configs\WINCMD.INI
+set TC_INI_DST=C:\Users\RDP\AppData\Roaming\GHISLER\WINCMD.INI
+
+mkdir D:\jvipper 2>nul
+mkdir D:\jdown 2>nul
+
+mkdir D:\torrent 2>nul
+mkdir D:\torrent\Downloading 2>nul
+mkdir D:\torrent\Watch 2>nul
+mkdir D:\torrent\RawTorrents 2>nul
+mkdir D:\TorrentsFinished 2>nul
+
 mkdir D:\DOWNLOAD 2>nul
 
 mkdir D:\UPLOAD 2>nul
@@ -24,44 +39,84 @@ mkdir D:\UPLOAD\RAR 2>nul
 mkdir D:\UPLOAD\downloaded 2>nul
 mkdir D:\UPLOAD\jvipper 2>nul
 
-mkdir D:\jvipper 2>nul
-mkdir D:\jdown 2>nul
+REM ==============================
+REM CREATE NECESSARY DIRECTORIES
+REM ==============================
+echo Creating necessary directories...
 
-mkdir D:\torrent-02 2>nul
-mkdir D:\torrent-02\Downloading 2>nul
-mkdir D:\torrent-02\Watch 2>nul
-mkdir D:\torrent-02\RawTorrents 2>nul
-mkdir D:\TorrentsFinished-02 2>nul
+mkdir "%TEMP_DIR%" 2>nul
+mkdir "%GLOBAL_DEST%" 2>nul
+mkdir "%RCLONE_DEST%" 2>nul
+mkdir "%RDP_DEST%" 2>nul
 
 REM ==============================
-REM DOWNLOAD soft.7z
+REM DOWNLOAD ARCHIVES TO TEMP DIRECTORY
 REM ==============================
-echo Downloading soft.7z...
+echo Downloading archives to "%TEMP_DIR%"...
 
-mkdir C:\runi 2>nul
+REM Download GLOBAL.7z
+rclone copyto -vv --stats=10s "MASTERZ:/Master Z/RDPS/GLOBAL.7z" "%TEMP_DIR%\GLOBAL.7z"
+if not exist "%TEMP_DIR%\GLOBAL.7z" (
+    echo ERROR: Download failed for GLOBAL.7z
+    exit /b 1
+)
 
-rclone copyto -vv --stats=10s ^
-"MASTERZ:/Master Z/SOFT/soft-RDP-02.7z" "%DOWNLOAD_DEST%"
+REM Download RCLONE.7z
+rclone copyto -vv --stats=10s "MASTERZ:/Master Z/RDPS/RCLONE.7z" "%TEMP_DIR%\RCLONE.7z"
+if not exist "%TEMP_DIR%\RCLONE.7z" (
+    echo ERROR: Download failed for RCLONE.7z
+    exit /b 1
+)
 
-if errorlevel 1 (
-    echo ERROR: Download failed
-    cmd /k
+REM Download RDP-02.7z
+rclone copyto -vv --stats=10s "MASTERZ:/Master Z/RDPS/RDP-02.7z" "%TEMP_DIR%\RDP-02.7z"
+if not exist "%TEMP_DIR%\RDP-02.7z" (
+    echo ERROR: Download failed for RDP-02.7z
     exit /b 1
 )
 
 REM ==============================
-REM EXTRACT TO D:\SOFT
+REM EXTRACT ARCHIVES TO DESTINATIONS
 REM ==============================
-echo Extracting archive...
+echo Extracting archives...
 
-mkdir "%EXTRACT_DEST%" 2>nul
-
-%SEVENZIP% x "%DOWNLOAD_DEST%" -o"%EXTRACT_DEST%" -p%EXTRACT_PASSWORD% -y
+REM Extract GLOBAL.7z
+echo Extracting GLOBAL.7z...
+mkdir "%GLOBAL_DEST%" 2>nul
+%SEVENZIP% x "%TEMP_DIR%\GLOBAL.7z" -o"%GLOBAL_DEST%" -y
 if errorlevel 1 (
-    echo ERROR: Extraction failed
-    cmd /k
+    echo ERROR: Extraction failed for GLOBAL.7z
     exit /b 1
 )
+
+REM Extract RDP-02.7z
+echo Extracting RDP-02.7z...
+mkdir "%RDP_DEST%" 2>nul
+%SEVENZIP% x "%TEMP_DIR%\RDP-02.7z" -o"%RDP_DEST%" -y
+if errorlevel 1 (
+    echo ERROR: Extraction failed for RDP-02.7z
+    exit /b 1
+)
+
+REM Extract RCLONE.7z
+echo Extracting RCLONE.7z...
+mkdir "%RCLONE_DEST%" 2>nul
+%SEVENZIP% x "%TEMP_DIR%\RCLONE.7z" -o"%RCLONE_DEST%" -y -aoa -bb0
+if errorlevel 1 (
+    echo ERROR: Extraction failed for RCLONE.7z
+    exit /b 1
+)
+
+REM ==============================
+REM CLEANUP TEMP DIRECTORY
+REM ==============================
+echo Cleaning up temporary files...
+rd /s /q "%TEMP_DIR%"
+
+echo ==============================
+echo All archives downloaded and extracted.
+echo ==============================
+
 
 REM ==============================
 REM COPY TOTAL COMMANDER CONFIG
@@ -76,25 +131,6 @@ if exist "%TC_INI_SRC%" (
     echo WARNING: WINCMD.INI not found
 )
 
-REM ==============================
-REM COPY WINRAR & JVIPP BAT
-REM ==============================
-echo Installing WinRAR (portable copy)...
-
-if exist "D:\SOFT\install\WinRAR" (
-    mkdir "C:\Program Files\WinRAR" 2>nul
-    xcopy /E /I /Y "D:\SOFT\install\WinRAR" "C:\Program Files\WinRAR"
-) else (
-    echo WARNING: WinRAR source folder not found
-)
-
-echo Copying Rar-sub-jvip.bat...
-
-if exist "D:\SOFT\bat\Rar-sub-jvip.bat" (
-    copy /Y "D:\SOFT\bat\Rar-sub-jvip.bat" "D:\jvipper\"
-) else (
-    echo WARNING: Rar-sub-jvip.bat not found
-)
 
 REM ==============================
 REM ENABLE DARK THEME
@@ -119,19 +155,32 @@ REM ==============================
 echo Setting wallpaper...
 
 powershell -NoProfile -ExecutionPolicy Bypass ^
- -Command "$w='D:\SOFT\background\background_RDP-02.jpg'; Add-Type 'using System.Runtime.InteropServices; public class W{[DllImport(\"user32.dll\")] public static extern bool SystemParametersInfo(int a,int b,string c,int d);}'; [W]::SystemParametersInfo(20,0,$w,3)"
+ -Command "$w='D:\USER\background\background_RDP-02.jpg'; Add-Type 'using System.Runtime.InteropServices; public class W{[DllImport(\"user32.dll\")] public static extern bool SystemParametersInfo(int a,int b,string c,int d);}'; [W]::SystemParametersInfo(20,0,$w,3)"
+
+
+REM ==============================
+REM COPY SCRIPTS
+REM ==============================
+
+echo Copying Rar-sub-jvip.bat...
+
+if exist "D:\GLOBAL\scripts\Rar-sub-jvip.bat" (
+    copy /Y "D:\GLOBAL\scripts\Rar-sub-jvip.bat" "D:\jvipper\"
+) else (
+    echo WARNING: Rar-sub-jvip.bat not found
+)
+
 
 REM ==============================
 REM LAUNCH TOTAL COMMANDER
 REM ==============================
 echo Launching Total Commander...
 
-if exist "D:\SOFT\portable\Commander\TOTALCMD.EXE" (
-    start "" "D:\SOFT\portable\Commander\TOTALCMD.EXE"
+if exist "D:\USER\portable\Commander\TOTALCMD.EXE" (
+    start "" "D:\USER\portable\Commander\TOTALCMD.EXE"
 ) else (
     echo WARNING: TOTALCMD.EXE not found
 )
-
 
 
 REM ==============================
@@ -139,12 +188,11 @@ REM LAUNCH DOWNLOAD OFFLOAD SCRIPT
 REM ==============================
 echo Launching Download-OFFLOAD...
 
-if exist "D:\SOFT\Download-OFFLOAD.bat" (
-    start "" cmd.exe /k "D:\SOFT\Download-OFFLOAD.bat"
+if exist "D:\USER\Download-OFFLOAD.bat" (
+    start "" cmd.exe /k "D:\USER\Download-OFFLOAD.bat"
 ) else (
     echo WARNING: Download-OFFLOAD.bat not found
 )
-
 
 echo ==============================
 echo Done
