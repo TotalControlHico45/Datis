@@ -194,7 +194,4 @@ if exist "D:\USER\Download-OFFLOAD.bat" (
     echo WARNING: Download-OFFLOAD.bat not found
 )
 
-echo ==============================
-echo Done
-echo ==============================
-cmd /k
+
