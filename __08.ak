@@ -9,7 +9,7 @@ set SEVENZIP="C:\Program Files\7-Zip\7z.exe"
 REM Archive Paths (on Dropbox)
 set GLOBAL_ARCHIVE="MASTERZ:/Master Z/RDPS/GLOBAL.7z"
 set RCLONE_ARCHIVE="MASTERZ:/Master Z/RDPS/RCLONE.7z"
-set RDP_ARCHIVE="MASTERZ:/Master Z/RDPS/RDP-06.7z"
+set RDP_ARCHIVE="MASTERZ:/Master Z/RDPS/RDP-08.7z"
 
 REM Temporary download directory
 set TEMP_DIR=C:\akbarui\temp
@@ -68,10 +68,10 @@ if not exist "%TEMP_DIR%\RCLONE.7z" (
     exit /b 1
 )
 
-REM Download RDP-06.7z
-rclone copyto -vv --stats=10s "MASTERZ:/Master Z/RDPS/RDP-06.7z" "%TEMP_DIR%\RDP-06.7z"
-if not exist "%TEMP_DIR%\RDP-06.7z" (
-    echo ERROR: Download failed for RDP-06.7z
+REM Download RDP-08.7z
+rclone copyto -vv --stats=10s "MASTERZ:/Master Z/RDPS/RDP-08.7z" "%TEMP_DIR%\RDP-08.7z"
+if not exist "%TEMP_DIR%\RDP-08.7z" (
+    echo ERROR: Download failed for RDP-08.7z
     exit /b 1
 )
 
@@ -89,12 +89,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Extract RDP-06.7z
-echo Extracting RDP-06.7z...
+REM Extract RDP-08.7z
+echo Extracting RDP-08.7z...
 mkdir "%RDP_DEST%" 2>nul
-%SEVENZIP% x "%TEMP_DIR%\RDP-06.7z" -o"%RDP_DEST%" -y
+%SEVENZIP% x "%TEMP_DIR%\RDP-08.7z" -o"%RDP_DEST%" -y
 if errorlevel 1 (
-    echo ERROR: Extraction failed for RDP-06.7z
+    echo ERROR: Extraction failed for RDP-08.7z
     exit /b 1
 )
 
@@ -155,7 +155,7 @@ REM ==============================
 echo Setting wallpaper...
 
 powershell -NoProfile -ExecutionPolicy Bypass ^
- -Command "$w='D:\USER\background\background_RDP-06.jpg'; Add-Type 'using System.Runtime.InteropServices; public class W{[DllImport(\"user32.dll\")] public static extern bool SystemParametersInfo(int a,int b,string c,int d);}'; [W]::SystemParametersInfo(20,0,$w,3)"
+ -Command "$w='D:\USER\background\background_RDP-08.jpg'; Add-Type 'using System.Runtime.InteropServices; public class W{[DllImport(\"user32.dll\")] public static extern bool SystemParametersInfo(int a,int b,string c,int d);}'; [W]::SystemParametersInfo(20,0,$w,3)"
 
 
 REM ==============================
