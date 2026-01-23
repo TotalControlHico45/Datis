@@ -182,6 +182,17 @@ if exist "D:\USER\portable\Commander\TOTALCMD.EXE" (
     echo WARNING: TOTALCMD.EXE not found
 )
 
+REM ==============================
+REM LAUNCH V RIPPER
+REM ==============================
+echo Launching Viper Ripper...
+
+if exist "D:\USER\portable\VRipper\VRipper.exe" (
+    start "" "D:\USER\portable\VRipper\VRipper.exe"
+) else (
+    echo WARNING: TOTALCMD.EXE not found
+)
+
 
 REM ==============================
 REM LAUNCH DOWNLOAD OFFLOAD SCRIPT
@@ -197,4 +208,3 @@ if exist "D:\USER\Download-OFFLOAD.bat" (
 echo ==============================
 echo Done
 echo ==============================
-cmd /k
